@@ -1,8 +1,6 @@
 ---
 title: Kubernetes初始化 
 tags: centos7,k8s,初始化
-renderNumberedHeading: true
-grammar_cjkRuby: true
 ---
 
 
