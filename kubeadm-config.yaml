@@ -1,0 +1,46 @@
+apiVersion: kubeadm.k8s.io/v1beta2
+bootstrapTokens:
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: abcdef.0123456789abcdef
+  ttl: 24h0m0s
+  usages:
+  - signing
+  - authentication
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 172.17.250.250 #主节点ip
+  bindPort: 6443
+nodeRegistration:
+  criSocket: /var/run/dockershim.sock
+  name: master250.k8s #主节点
+  taints:
+  - effect: PreferNoSchedule #NoSchedule
+    key: node-role.kubernetes.io/master
+---
+apiServer:
+  timeoutForControlPlane: 4m0s
+apiVersion: kubeadm.k8s.io/v1beta2
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+controlPlaneEndpoint: "172.17.250.254:8443" #高可用方案得添加这行，得先部署keepalive和haproxy，keeplive虚拟的ip
+controllerManager: {}
+dns:
+  type: CoreDNS
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers #修改为国内镜像源
+kind: ClusterConfiguration
+kubernetesVersion: v1.16.2 #版本号
+networking:
+  dnsDomain: cluster.local
+  podSubnet: "10.244.0.0/16" #添加此行，此为flannel网络默认网段,也可修改插件yaml文件中的网段，也可只写""
+  serviceSubnet: 10.96.0.0/12
+scheduler: {}
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1 #末尾添加，修改为ipvs调度模式
+kind: KubeProxyConfiguration
+featureGates:
+  SupportIPVSProxyMode: true
+mode: ipvs
