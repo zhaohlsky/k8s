@@ -127,7 +127,8 @@ data:
     {
       "Network": "10.244.0.0/16", #与kubeadm初始化文件中的serviceSubnet的值对应
       "Backend": {
-        "Type": "vxlan"
+        "Type": "vxlan",    #若节点都在同一个二层网络，则可以用 host-gw模式
+        "Directrouting": true   #在vxlan模式中，添加此行可以增加性能
       }
     }
 ---
